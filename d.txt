@@ -1,0 +1,477 @@
+1
+
+def encrypt(text,s):
+    result =""
+    for i in range(len(text)):
+        char = text[i]
+        if char.isupper():
+            result+=chr((ord(char)+s-65)%26+65)
+        else:
+            result+=chr((ord(char)+s-97)%26+97)
+    return result        
+
+Technique = input("give ")
+
+if Technique == 'Encrypt':
+    t="hello"
+    s =3
+    e=encrypt(t,s)
+    print(t)
+    print(str(s))
+    print(e)
+    
+if Technique == 'Decrypt':
+    t="khoor"
+    s =3
+    d=encrypt(t,26-s)
+    print(t)
+    print(str(s))
+    print(d)
+
+    
+2
+
+import random
+
+alpha = "abcdefghijklmnopqrstuvwxyz"
+
+def encrypt(text,key=None):
+    if key is None:
+        l = list(alpha)
+        random.shuffle(l)
+        key = "".join(l)
+        a=[]
+        for i in text:
+            a.append(key[alpha.index(i)])
+    return ["".join(a),key]
+
+def decrypt(cipher,key=None):
+    if key is not None:
+        a=[]
+        for i in cipher:
+            a.append(alpha[key.index(i)])
+    return ["".join(a)]
+
+text = input("give")
+if text.isupper():
+    ch=text.lower()
+else:
+    ch=text
+
+e=encrypt(ch,None)
+print(e)
+d=decrypt(e[0],e[1])
+print(d)
+
+3
+ 
+def toLowerCase(text):
+    return text.lower()
+ 
+# Function to remove all spaces in a string
+ 
+ 
+def removeSpaces(text):
+    newText = ""
+    for i in text:
+        if i == " ":
+            continue
+        else:
+            newText = newText + i
+    return newText
+ 
+# Function to group 2 elements of a string
+# as a list element
+ 
+ 
+def Diagraph(text):
+    Diagraph = []
+    group = 0
+    for i in range(2, len(text), 2):
+        Diagraph.append(text[group:i])
+ 
+        group = i
+    Diagraph.append(text[group:])
+    return Diagraph
+ 
+# Function to fill a letter in a string element
+# If 2 letters in the same string matches
+ 
+ 
+def FillerLetter(text):
+    k = len(text)
+    if k % 2 == 0:
+        for i in range(0, k, 2):
+            if text[i] == text[i+1]:
+                new_word = text[0:i+1] + str('x') + text[i+1:]
+                new_word = FillerLetter(new_word)
+                break
+            else:
+                new_word = text
+    else:
+        for i in range(0, k-1, 2):
+            if text[i] == text[i+1]:
+                new_word = text[0:i+1] + str('x') + text[i+1:]
+                new_word = FillerLetter(new_word)
+                break
+            else:
+                new_word = text
+    return new_word
+ 
+ 
+list1 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm',
+         'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+ 
+# Function to generate the 5x5 key square matrix
+ 
+ 
+def generateKeyTable(word, list1):
+    key_letters = []
+    for i in word:
+        if i not in key_letters:
+            key_letters.append(i)
+ 
+    compElements = []
+    for i in key_letters:
+        if i not in compElements:
+            compElements.append(i)
+    for i in list1:
+        if i not in compElements:
+            compElements.append(i)
+ 
+    matrix = []
+    while compElements != []:
+        matrix.append(compElements[:5])
+        compElements = compElements[5:]
+ 
+    return matrix
+ 
+ 
+def search(mat, element):
+    for i in range(5):
+        for j in range(5):
+            if(mat[i][j] == element):
+                return i, j
+ 
+ 
+def encrypt_RowRule(matr, e1r, e1c, e2r, e2c):
+    char1 = ''
+    if e1c == 4:
+        char1 = matr[e1r][0]
+    else:
+        char1 = matr[e1r][e1c+1]
+ 
+    char2 = ''
+    if e2c == 4:
+        char2 = matr[e2r][0]
+    else:
+        char2 = matr[e2r][e2c+1]
+ 
+    return char1, char2
+ 
+ 
+def encrypt_ColumnRule(matr, e1r, e1c, e2r, e2c):
+    char1 = ''
+    if e1r == 4:
+        char1 = matr[0][e1c]
+    else:
+        char1 = matr[e1r+1][e1c]
+ 
+    char2 = ''
+    if e2r == 4:
+        char2 = matr[0][e2c]
+    else:
+        char2 = matr[e2r+1][e2c]
+ 
+    return char1, char2
+ 
+ 
+def encrypt_RectangleRule(matr, e1r, e1c, e2r, e2c):
+    char1 = ''
+    char1 = matr[e1r][e2c]
+ 
+    char2 = ''
+    char2 = matr[e2r][e1c]
+ 
+    return char1, char2
+ 
+ 
+def encryptByPlayfairCipher(Matrix, plainList):
+    CipherText = []
+    for i in range(0, len(plainList)):
+        c1 = 0
+        c2 = 0
+        ele1_x, ele1_y = search(Matrix, plainList[i][0])
+        ele2_x, ele2_y = search(Matrix, plainList[i][1])
+ 
+        if ele1_x == ele2_x:
+            c1, c2 = encrypt_RowRule(Matrix, ele1_x, ele1_y, ele2_x, ele2_y)
+            # Get 2 letter cipherText
+        elif ele1_y == ele2_y:
+            c1, c2 = encrypt_ColumnRule(Matrix, ele1_x, ele1_y, ele2_x, ele2_y)
+        else:
+            c1, c2 = encrypt_RectangleRule(
+                Matrix, ele1_x, ele1_y, ele2_x, ele2_y)
+ 
+        cipher = c1 + c2
+        CipherText.append(cipher)
+    return CipherText
+ 
+ 
+text_Plain = 'Pattern'
+text_Plain = removeSpaces(toLowerCase(text_Plain))
+PlainTextList = Diagraph(FillerLetter(text_Plain))
+if len(PlainTextList[-1]) != 2:
+    PlainTextList[-1] = PlainTextList[-1]+'z'
+ 
+key = "Network"
+print("Key text:", key)
+key = toLowerCase(key)
+Matrix = generateKeyTable(key, list1)
+ 
+print("Plain Text:", text_Plain)
+CipherList = encryptByPlayfairCipher(Matrix, PlainTextList)
+ 
+CipherText = ""
+for i in CipherList:
+    CipherText += i
+print("CipherText:", CipherText)
+
+
+4
+
+def generateKey(string, key): 
+  key = list(key) 
+  if len(string) == len(key): 
+    return(key) 
+  else: 
+    for i in range(len(string) -len(key)): 
+      key.append(key[i % len(key)]) 
+  return("" . join(key)) 
+  
+def encryption(string, key): 
+  encrypt_text = [] 
+  for i in range(len(string)): 
+    x = (ord(string[i]) +ord(key[i])) % 26
+    x += ord('A') 
+    encrypt_text.append(chr(x)) 
+  return("" . join(encrypt_text)) 
+
+def decryption(encrypt_text, key): 
+  orig_text = [] 
+  for i in range(len(encrypt_text)): 
+    x = (ord(encrypt_text[i]) -ord(key[i]) + 26) % 26
+    x += ord('A') 
+    orig_text.append(chr(x)) 
+  return("" . join(orig_text)) 
+
+if __name__ == "__main__": 
+  string = input("Enter the message: ")
+  keyword = input("Enter the keyword: ")
+  key = generateKey(string, keyword) 
+  encrypt_text = encryption(string,key) 
+  print("Encrypted message:", encrypt_text) 
+  print("Decrypted message:", decryption(encrypt_text, key)) 
+
+5
+
+print ("#A python program to illustrate Vernam Cipher Technique.")
+
+def Encrypt(message,key):
+    message=str(message)
+    m=message.upper().replace("","")#Convert to upper case
+    encrypt=""
+    #if the key value is not a number,then run with kry=0
+    for i in range(len(m)):
+        letter=ord(m[i])-65#Letter now range 0-25
+        s=key.upper().replace("","")
+        l=ord(s[i])-65
+        #print("\n",l)
+        letter=(letter+l)#Alpha numeric+key mod25=0-25
+        #print(letter)
+        if letter>25:
+            letter=letter-26
+            letter+=65
+        else:
+            #letter=letter
+            letter+=65
+        encrypt+=chr(letter)#Concatenate message
+    return encrypt
+def Decrypt(message,key):
+    message=str(message)
+    m=message.upper().replace("","")#Convert to upper case
+    decrypt=""
+    #if the key value is not a number,then run with kry=0
+    for i in range(len(m)):
+        le=ord(m[i])-65#Letter now range 0-25
+        s=key.upper().replace("","")
+        letter=ord(s[i])-65
+        le=le-letter#Alpha numeric+key mod25=0-25
+        if le<0:
+            le=(le+26)
+            le+=65
+            
+        else:
+            le+=65
+        decrypt+=chr(le)#Concatenate message
+    return decrypt
+def Testing(Text,Key,E):
+    
+    Test = input("Do you want to Check what your Original Text was by Decrypting Message?\n\ni.e.(Type 'Yes'/'No')\n\n")
+
+    if Test == 'Yes':
+        Technique = 'Decrypt'
+        myKey = Key
+        Key = myKey
+        myMessage = E
+        Text = myMessage
+        D = Decrypt(Text, Key)
+        print ("Your Mode        : " + Technique)
+        print ("Your Cipher Text : " + Text)
+        print ("Key              : " + Key)
+        print ("Decrypted Text   : " + D)
+
+    elif Test == 'No':
+        print ("Thank You...!\n")
+
+    else:
+        print ("Please Try Again...!\n")
+        
+Technique = input("Enter Your Choice for Vernam Cipher Technique, i.e. Either Encrypt or Decrypt, Type ('Encrypt' or 'Decrypt').\n\n")
+
+if Technique =='Encrypt':
+    Text = input("Enter the Text You want to be Converted...\n\n")
+    Key = input("Enter The Key of your Choice\n\n")
+    E = Encrypt(Text,Key)
+    print ("Your Mode      : " + Technique)
+    print ("Your Text      : " + Text)
+    print ("Key            : " + Key)
+    print ("Encrypted Text : " + E)
+    Testing(Text,Key,E)
+elif Technique =='Decrypt':
+    Text = input("Enter the Vernam Cipher Text You want to be Decrypted...\n\n")
+    Key = input("Enter the Key provided to You...\n\n")
+    D = Decrypt(Text,Key)
+    print ("Your Mode                  : " + Technique)
+    print ("Your Vernam Cipher Text    : " + Text)
+    print ("Key                        : " + Key)
+    print ("Decrypted Text             : " + D)
+    
+else :
+    print ("Wrong Choice Please Try Again ... ")
+
+#else:
+#    Text = input("\nEnter the Text You want to be Converted...\n\n")
+#    Key = input("\nEnter The Key of your Choice\n\n")
+#    D=Decrypt(Text,Key)
+#   print("Decrypt=", D)
+
+6
+def encrypt(layers,text):
+    text = text.replace(" ","")
+    text = text.upper()
+    rail = [""]*layers
+    l=0
+    for i in text:
+        rail[l]+=i
+        if l>=layers-1:
+            l=0
+        else:
+            l+=1
+    cipher = "".join(rail)
+    return cipher
+
+layers = int(input("Enter number of layers "))
+text= input("give ")
+cipher=encrypt(layers,text)
+print(cipher)
+
+7
+
+def split_len(seq, length):
+   return [seq[i:i + length] for i in range(0, len(seq), length)]
+def encode(key, plaintext):
+    order = {int(val): num for num, val in enumerate(key)  }
+    ciphertext = ''
+
+    for index in sorted(order.keys()):
+        for part in split_len(plaintext, len(key)):
+          try:
+              ciphertext += part[order[index]]
+          except IndexError:
+              continue
+    return ciphertext
+text=input("enter text ")
+columnkey=input("enter reading column sequence ")
+print("Encrypted text=",encode(columnkey, text))
+
+8
+
+#import math
+p=int(input("enter value for p "))
+q=int(input("enter value for q "))
+n=p*q
+print("\n n= ", n)
+phi=(p-1)*(q-1)
+print("\n Eulers totient function phi= ",phi)
+print("This is List of Co-Primes Arrays for given Prime Numbers:\n")
+e=int(input("enter values of e"))
+def modinv(e, m):
+    for x in range(1, m):
+        if(e*x)%m==1:
+            return x
+    return None
+d=modinv(e,phi)
+def encrypt(me):
+    #en=math.pow(me,e)
+    ci=pow(me,e,n)
+    #ci=en%n
+    return ci
+def decrypt(me):
+    #en =math.pow(me,d)
+    #de= en % n
+    de=pow(me,d,n)
+    return de
+message = int(input("Enter the message to be encrypted: "))
+print("Original Message is: ",message)
+c=encrypt(message)
+print("Encrypted Message is: ",c)
+d=decrypt(c)
+print("decrypted Message is ",d)
+
+9
+def deffie(q,a,xa,xb):
+    ya = (a**xa)%q
+    print("public key of user a",ya)
+    yb = (a**xb)%q
+    print("public key of user b",yb)
+    ka = (yb**xa)%q
+    print("secret key of user a",ka)
+    kb = (ya**xb)%q
+    print("secret key of user b",kb)
+
+q=int(input("Enter Value for q"))
+a=int(input("Enter Value for a"))
+xa=int(input("Enter Value for xa"))
+xb=int(input("Enter Value for xb"))
+
+deffie(q,a,xa,xb)
+
+10
+
+import hashlib
+result = hashlib.md5(b'Ismile')
+result1 = hashlib.md5(b'Esmile')
+# printing the equivalent byte value.
+print("The byte equivalent of hash is : ", end ="")
+print(result.digest())
+print("The byte equivalent of hash is : ", end ="")
+print(result1.digest())
+
+11
+
+import hashlib
+str = input(" Enter the value to encode ")
+result = hashlib.sha1(str.encode())
+print("The hexadecima equivalent if SHA1 is :  ")
+print(result.hexdigest())
